@@ -15,6 +15,10 @@ def get_colors(img):
         [color] * count for count, color in img.getcolors(w * h)
     )))
 
+def clusterize(img, k):
+    clusters, labels = kmeans2(array(img.getdata()), k, minit='points')
+    img.putdata([tuple(clusters[label]) for label in labels])
+
 def tobits(img):
     clusters, labels = kmeans2(array(img.getdata()), 2, minit='points')
     return labels
