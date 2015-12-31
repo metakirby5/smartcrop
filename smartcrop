@@ -5,7 +5,6 @@ from itertools import chain
 from PIL import Image
 from numpy import array
 from scipy.cluster.vq import kmeans2
-from colorsys import rgb_to_hsv, hsv_to_rgb
 
 tw = 200
 
