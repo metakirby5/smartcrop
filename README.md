@@ -1,2 +1,4 @@
 # smartcrop
-smartly crop an image
+
+Smartly crop an image into the square with the most balanced activity.
+

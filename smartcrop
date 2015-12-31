@@ -24,12 +24,14 @@ def flatten(bits, majo, mino):
             for imaj in range(majo)]
 
 def get_offset(arr, win):
-    most = -1
+    best = win * win # > max dist
     offset = 0
     for i in range(len(arr) - win + 1):
         count = sum(arr[i:i+win])
-        if count > most:
-            most = count
+        # distance from half of the max count
+        cur = abs((win * win / 2) - count)
+        if cur < best:
+            best = cur
             offset = i
     return offset
 
@@ -53,7 +55,11 @@ def main():
     toffset = get_offset(flatten(bits, majo, mino), mino)
 
     ioffset = int(toffset * (iw / float(tw)))
-    print 'o: %s; s: %s; m: %s; (%s, %s)' % (ioffset, isiz, xmajo, iw, ih)
+    # correct the offset if it's out of bounds
+    if ioffset + isiz > iw:
+        ioffset = iw - isiz
+
+    print 'o: %s; (%s, %s)' % (ioffset, iw, ih)
 
     if xmajo:
         crop = img.crop((ioffset, 0, ioffset + isiz, isiz))
