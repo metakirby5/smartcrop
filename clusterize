@@ -17,7 +17,7 @@ def main():
     _, src, dest, k = argv
 
     img = Image.open(src)
-    clusterize(img, k)
+    clusterize(img, int(k))
     img.save(dest)
 
 if __name__ == '__main__':
