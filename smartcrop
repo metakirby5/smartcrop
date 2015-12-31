@@ -7,7 +7,6 @@ from numpy import array
 from scipy.cluster.vq import kmeans2
 from colorsys import rgb_to_hsv, hsv_to_rgb
 
-k = 2
 tw = 200
 
 def get_colors(img):
@@ -16,9 +15,23 @@ def get_colors(img):
         [color] * count for count, color in img.getcolors(w * h)
     )))
 
-def clusterize(img, k):
-    clusters, labels = kmeans2(array(img.getdata()), k, minit='points')
-    img.putdata([tuple(clusters[label]) for label in labels])
+def tobits(img):
+    clusters, labels = kmeans2(array(img.getdata()), 2, minit='points')
+    return labels
+
+def flatten(bits, majo, mino):
+    return [sum(bits[imin*majo+imaj] for imin in range(mino))
+            for imaj in range(majo)]
+
+def get_offset(arr, win):
+    most = -1
+    offset = 0
+    for i in range(len(arr) - win + 1):
+        count = sum(arr[i:i+win])
+        if count > most:
+            most = count
+            offset = i
+    return offset
 
 def main():
     if len(argv) != 3:
@@ -29,14 +42,25 @@ def main():
 
     img = Image.open(src)
     iw, ih = img.size
+    isiz = min(iw, ih)
 
     thumb = img.copy()
-    thumb.thumbnail((tw, tw * (ih / float(iw))))
+    th = int(tw * (ih / float(iw)))
+    thumb.thumbnail((tw, th))
 
-    clusterize(thumb, k)
-    rthumb = thumb.resize(img.size)
+    bits = tobits(thumb)
+    xmajo, mino, majo = tw > th, min(tw, th), max(tw, th)
+    toffset = get_offset(flatten(bits, majo, mino), mino)
 
-    rthumb.save(dest)
+    ioffset = int(toffset * (iw / float(tw)))
+    print 'o: %s; s: %s; m: %s; (%s, %s)' % (ioffset, isiz, xmajo, iw, ih)
+
+    if xmajo:
+        crop = img.crop((ioffset, 0, ioffset + isiz, isiz))
+    else:
+        crop = img.crop((0, ioffset, isiz, ioffset + isiz))
+
+    crop.save(dest)
 
 if __name__ == '__main__':
     main()
