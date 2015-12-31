@@ -1,22 +1,11 @@
 #!/usr/bin/env python2
 
 from sys import argv, exit
-from itertools import chain
 from PIL import Image
 from numpy import array
 from scipy.cluster.vq import kmeans2
 
 tw = 200
-
-def get_colors(img):
-    w, h = img.size
-    return list(chain(*(
-        [color] * count for count, color in img.getcolors(w * h)
-    )))
-
-def clusterize(img, k):
-    clusters, labels = kmeans2(array(img.getdata()), k, minit='points')
-    img.putdata([tuple(clusters[label]) for label in labels])
 
 def tobits(img):
     clusters, labels = kmeans2(array(img.getdata()), 2, minit='points')
@@ -73,3 +62,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

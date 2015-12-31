@@ -1,0 +1,25 @@
+#!/usr/bin/env python2
+
+from sys import argv, exit
+from PIL import Image
+from numpy import array
+from scipy.cluster.vq import kmeans2
+
+def clusterize(img, k):
+    clusters, labels = kmeans2(array(img.getdata()), k, minit='points')
+    img.putdata([tuple(clusters[label]) for label in labels])
+
+def main():
+    if len(argv) != 3:
+        print('USAGE: %s [src] [dest] [k]' % argv[0])
+        exit()
+
+    _, src, dest, k = argv
+
+    img = Image.open(src)
+    clusterize(img, k)
+    img.save(dest)
+
+if __name__ == '__main__':
+    main()
+
