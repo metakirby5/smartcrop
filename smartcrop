@@ -5,7 +5,7 @@ from PIL import Image
 from numpy import array
 from scipy.cluster.vq import kmeans2
 
-ts = 200
+tsiz = 200
 
 def tobits(img):
     return kmeans2(array(img.getdata()), 2, minit='points')[1]
@@ -38,18 +38,14 @@ def main():
     xmajo, isiz = iw > ih, min(iw, ih)
 
     thumb = img.copy()
-    if xmajo:
-        tw = ts
-        th = int(tw * (ih / float(iw)))
-    else:
-        th = ts
-        tw = int(th * (iw / float(ih)))
-    thumb.thumbnail((tw, th))
+    thumb.thumbnail((tsiz, tsiz))
+    tw, th = thumb.size
+    mino, majo = min(tw, th), max(tw, th)
 
     bits = tobits(thumb)
-    mino, majo = min(tw, th), max(tw, th)
     toffset = get_offset(flatten(bits, majo, mino), mino)
 
+    # rescale offset
     ioffset = int(toffset * (iw / float(tw)))
     # correct the offset if it's out of bounds
     if ioffset + isiz > iw:
