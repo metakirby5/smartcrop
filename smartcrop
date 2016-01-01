@@ -5,11 +5,10 @@ from PIL import Image
 from numpy import array
 from scipy.cluster.vq import kmeans2
 
-tw = 200
+ts = 200
 
 def tobits(img):
-    clusters, labels = kmeans2(array(img.getdata()), 2, minit='points')
-    return labels
+    return kmeans2(array(img.getdata()), 2, minit='points')[1]
 
 def flatten(bits, majo, mino):
     return [sum(bits[imin*majo+imaj] for imin in range(mino))
@@ -36,14 +35,19 @@ def main():
 
     img = Image.open(src)
     iw, ih = img.size
-    isiz = min(iw, ih)
+    xmajo, isiz = iw > ih, min(iw, ih)
 
     thumb = img.copy()
-    th = int(tw * (ih / float(iw)))
+    if xmajo:
+        tw = ts
+        th = int(tw * (ih / float(iw)))
+    else:
+        th = ts
+        tw = int(th * (iw / float(ih)))
     thumb.thumbnail((tw, th))
 
     bits = tobits(thumb)
-    xmajo, mino, majo = tw > th, min(tw, th), max(tw, th)
+    mino, majo = min(tw, th), max(tw, th)
     toffset = get_offset(flatten(bits, majo, mino), mino)
 
     ioffset = int(toffset * (iw / float(tw)))
