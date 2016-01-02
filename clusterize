@@ -10,14 +10,18 @@ def clusterize(img, k):
     img.putdata([tuple(clusters[label]) for label in labels])
 
 def main():
-    if len(argv) != 4:
-        print('USAGE: %s [src] [dest] [k]' % argv[0])
+    if len(argv) != 5:
+        print('USAGE: %s [src] [dest] [k] [thumbnail size]' % argv[0])
         exit()
 
-    _, src, dest, k = argv
+    _, src, dest, k, tsiz = argv
+    k, tsiz = int(k), int(tsiz)
 
     img = Image.open(src)
-    clusterize(img, int(k))
+    isiz = img.size
+    img.thumbnail((tsiz, tsiz))
+    clusterize(img, k)
+    img = img.resize(isiz)
     img.save(dest)
 
 if __name__ == '__main__':
