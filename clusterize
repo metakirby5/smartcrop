@@ -6,8 +6,9 @@ from numpy import array
 from scipy.cluster.vq import kmeans2
 
 def clusterize(img, k):
-    clusters, labels = kmeans2(array(img.getdata()), k, minit='points')
-    img.putdata([tuple(clusters[label]) for label in labels])
+    clusters, labels = kmeans2(array(img.getdata()).astype(float),
+                               k, minit='points')
+    img.putdata([tuple(map(int, clusters[label])) for label in labels])
 
 def main():
     if len(argv) != 5:

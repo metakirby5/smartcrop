@@ -8,7 +8,7 @@ from scipy.cluster.vq import kmeans2
 tsiz = 200
 
 def tobits(img):
-    return kmeans2(array(img.getdata()), 2, minit='points')[1]
+    return kmeans2(array(img.getdata()).astype(float), 2, minit='points')[1]
 
 def flatten(bits, majo, mino):
     return [sum(bits[imin*majo+imaj] for imin in range(mino))
